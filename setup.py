@@ -1,6 +1,13 @@
 #!/usr/bin/env python3
+import os
 from setuptools import setup
 
+def package_files(directory):
+    paths = []
+    for (path, directories, filenames) in os.walk(directory):
+        for filename in filenames:
+            paths.append(os.path.join('..', path, filename))
+    return paths
 
 PLUGIN_ENTRY_POINT = 'ovos-PHAL-plugin-balena-wifi=ovos_PHAL_plugin_balena_wifi:BalenaWifiSetupPlugin'
 setup(
@@ -12,8 +19,10 @@ setup(
     author_email='jarbasai@mailfence.com',
     license='Apache-2.0',
     packages=['ovos_PHAL_plugin_balena_wifi'],
+    package_data={'': package_files('ovos_PHAL_plugin_balena_wifi')},
     install_requires=["ovos-plugin-manager>=0.0.1"],
     zip_safe=True,
+    include_package_data=True,
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
