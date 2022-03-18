@@ -193,6 +193,8 @@ class BalenaWifiSetupPlugin(PHALPlugin):
     def handle_internet_connected(self, message=None):
         """System came online later after booting."""
         self.enclosure.mouth_reset()
+        # sync clock as soon as we have internet
+        self.bus.emit(Message("system.ntp.sync"))
         self.stop_setup()  # just in case
         self.gui.release()
 
@@ -213,8 +215,6 @@ class BalenaWifiSetupPlugin(PHALPlugin):
 
     def report_setup_complete(self, message=None):
         """Wifi setup complete, network is connected."""
-        # sync clock as soon as we have internet
-        self.bus.emit(Message("system.ntp.sync"))
         # once first connected to internet increase time between checks
         self.connected = True
         self.time_between_checks = self.timeout_after_internet
