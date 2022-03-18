@@ -213,6 +213,8 @@ class BalenaWifiSetupPlugin(PHALPlugin):
 
     def report_setup_complete(self, message=None):
         """Wifi setup complete, network is connected."""
+        # sync clock as soon as we have internet
+        self.bus.emit(Message("system.ntp.sync"))
         # once first connected to internet increase time between checks
         self.connected = True
         self.time_between_checks = self.timeout_after_internet
@@ -221,7 +223,7 @@ class BalenaWifiSetupPlugin(PHALPlugin):
             self.monitoring = False
         self.manage_setup_display("setup-completed", "status")
         # allow GUI to linger around for a bit, will block the wifi setup loop
-        sleep(3)
+        sleep(5)
         self.bus.emit(Message("ovos.wifi.setup.completed"))
         # pairing skill should take over now
         self.gui.release()
