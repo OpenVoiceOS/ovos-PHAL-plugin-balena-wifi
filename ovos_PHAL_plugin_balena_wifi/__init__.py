@@ -7,7 +7,8 @@ from mycroft_bus_client.message import Message, dig_for_message
 from ovos_plugin_manager.phal import PHALPlugin
 from ovos_utils import create_daemon
 from ovos_utils.enclosure.api import EnclosureAPI
-from ovos_utils.gui import GUIInterface
+from ovos_utils.gui import GUIInterface, is_gui_connected
+from ovos_utils.device_input import can_use_touch_mouse
 from ovos_utils.log import LOG
 from ovos_utils.network_utils import is_connected
 from time import sleep
@@ -34,6 +35,11 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         self.timeout_after_internet = 90
 
         self.bus.on("mycroft.internet.connected", self.handle_internet_connected)
+        self.bus.on("ovos.phal.balena.on.device", self.handle_on_device_path)
+        self.bus.on("ovos.phal.balena.on.mobile", self.handle_on_mobile_path)
+        self.bus.on("ovos.phal.balena.ondevice.back", self.handle_on_device_path_exit)
+        self.bus.on("ovos.phal.balena.ondevice.report.success", self.handle_report_setup_success_on_device)
+        self.bus.on("ovos.phal.balena.ondevice.report.fail", self.handle_report_setup_failed_on_device)
 
         self.enclosure = EnclosureAPI(bus=self.bus, skill_id=self.name)
         self.gui = GUIInterface(bus=self.bus, skill_id=self.name)
@@ -66,7 +72,10 @@ class BalenaWifiSetupPlugin(PHALPlugin):
                     if not self.is_connected_to_wifi():
                         LOG.info("LAUNCH SETUP")
                         try:
-                            self.launch_wifi_setup()  # blocking
+                            if is_gui_connected(self.bus) and can_use_touch_mouse():
+                                self.show_network_mode_selector()
+                            else:
+                                self.launch_wifi_setup()  # blocking
                         except Exception as e:
                             LOG.exception(e)
                     else:
@@ -266,6 +275,12 @@ class BalenaWifiSetupPlugin(PHALPlugin):
             self.gui["color"] = "#FF0000"
             self.gui["page_type"] = "Status"
             self.gui.show_page(page, override_animations=True)
+        elif state == "gui-wifi-mode-selector" and page_type == "network-mode-selector":
+            self.gui["page_type"] = "ModeChoose"
+            self.gui.show_page(page, override_idle=True, override_animations=True)
+        elif state == "gui-wifi-network-select" and page_type == "plasma-network-select":
+            self.gui["page_type"] = "NetworkingLoader"
+            self.gui.show_page(page, override_idle=True, override_animations=True)
 
     # cleanup
     def stop_setup(self):
@@ -326,3 +341,35 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         m = message.forward("speak", data) if message else Message("speak", data)
         m.context["skill_id"] = self.name
         self.bus.emit(m)
+
+    # wifi setup using plasma network manager
+    def show_network_mode_selector(self, message=None):
+        self.manage_setup_display("gui-wifi-mode-selector", "network-mode-selector")
+
+    def handle_on_device_path(self, message=None):
+        self.manage_setup_display("gui-wifi-network-select", "plasma-network-select")
+        self.in_setup = True
+
+    def handle_on_mobile_path(self, message=None):
+        self.launch_wifi_setup()
+
+    def handle_on_device_path_exit(self, message=None):
+        self.in_setup = False
+        if not is_connected():
+            self.show_network_mode_selector()
+        else:
+            self.gui.release()
+
+    def handle_report_setup_success_on_device(self, message=None):
+        LOG.info("On device reported connection success")
+        self.report_setup_complete()
+        self.in_setup = False
+        sleep(2)
+        self.stop_setup()
+
+    def handle_report_setup_failed_on_device(self, message=None):
+        LOG.info("On device reported connection failure")
+        self.report_setup_failed()
+        self.in_setup = False
+        self.show_network_mode_selector()
+
