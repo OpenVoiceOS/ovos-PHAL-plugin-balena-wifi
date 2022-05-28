@@ -32,12 +32,13 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         self.bus.on("ovos.phal.wifi.plugin.client.registered", self.handle_registered)
         self.bus.on("ovos.phal.wifi.plugin.client.deregistered", self.handle_deregistered)
         self.bus.on("ovos.phal.wifi.plugin.client.registration.failure", self.handle_registration_failure)
+        self.bus.on("ovos.phal.wifi.plugin.alive", self.register_client)
         
         # Try Register the Client with WIFI Plugin on Startup
         self.register_client()
         
     # Wifi Plugin Registeration Handling
-    def register_client(self):
+    def register_client(self, message=None):
         self.bus.emit(Message("ovos.phal.wifi.plugin.register.client", {
             "client": self.name,
             "type": "Remote",
