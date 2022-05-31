@@ -207,6 +207,7 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         self.manage_setup_display("setup-completed", "status")
         # allow GUI to linger around for a bit, will block the wifi setup loop
         sleep(5)
+        self.bus.emit(Message("ovos.wifi.setup.completed"))
         self.client_active = False
         self.request_deactivate()
 
