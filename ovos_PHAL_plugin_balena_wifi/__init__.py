@@ -22,6 +22,7 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         self.debug = self.config.get("debug")  # dev setting, VERY VERBOSE DIALOGS
         self.ssid = self.config.get("ssid") or "OVOS"
         self.pswd = self.config.get("psk") or None
+        self.portal = self.config.get("portal") or "start dot openvoiceos dot com"
         self.wifi_command = "sudo /usr/local/sbin/wifi-connect --portal-ssid {ssid}"
         if self.pswd:
             self.wifi_command += " --portal-passphrase {pswd}"
@@ -192,14 +193,14 @@ class BalenaWifiSetupPlugin(PHALPlugin):
     def prompt_to_join_ap(self, message=None):
         """Provide instructions for setting up wifi."""
         self.manage_setup_display("join-ap", "prompt")
-        self.speak_dialog("wifi_intro_2")
+        self.speak_dialog("wifi_intro_2", {"ssid": self.ssid})
         # allow GUI to linger around for a bit, will block the wifi setup loop
         sleep(2)
 
     def prompt_to_select_network(self, message=None):
         """Prompt user to select network and login."""
         self.manage_setup_display("select-network", "prompt")
-        self.speak_dialog("wifi_intro_3")
+        self.speak_dialog("wifi_intro_3", {"portal": self.portal})
         # allow GUI to linger around for a bit, will block the wifi setup loop
         sleep(2)
 
@@ -293,17 +294,21 @@ class BalenaWifiSetupPlugin(PHALPlugin):
                self.config_core.get("lang") or \
                "en-us"
 
-    def speak_dialog(self, key):
+    def speak_dialog(self, key, data: dict = None):
         """ Speak a random sentence from a dialog file.
         Args:
             key (str): dialog file key (e.g. "hello" to speak from the file
                                         "locale/en-us/hello.dialog")
+            data (dict): dict of dialog entity substitutions
         """
         dialog_file = join(dirname(__file__), "locale", self.lang, key + ".dialog")
         with open(dialog_file) as f:
             utterances = [u for u in f.read().split("\n")
                           if u.strip() and not u.startswith("#")]
         utterance = random.choice(utterances)
+        if data:
+            for d in data:
+                utterance.replace('{{' + d + '}}', data[d])
         meta = {'dialog': key,
                 'skill': self.name}
         data = {'utterance': utterance,
