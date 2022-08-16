@@ -19,13 +19,13 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         self.in_setup = False
         
         self.wifi_process = None
-        self.debug = True  # dev setting, VERY VERBOSE DIALOGS
-        self.ssid = "OVOS"
-        self.pswd = None
+        self.debug = self.config.get("debug")  # dev setting, VERY VERBOSE DIALOGS
+        self.ssid = self.config.get("ssid") or "OVOS"
+        self.pswd = self.config.get("psk") or None
         self.wifi_command = "sudo /usr/local/sbin/wifi-connect --portal-ssid {ssid}"
         if self.pswd:
             self.wifi_command += " --portal-passphrase {pswd}"
-        self.color = "#FF0000"
+        self.color = self.config.get("color") or "#FF0000"
         
         # WIFI Plugin Registeration and Activation Specific Events        
         self.bus.on("ovos.phal.wifi.plugin.stop.setup.event", self.handle_stop_setup)
@@ -72,6 +72,7 @@ class BalenaWifiSetupPlugin(PHALPlugin):
             
     def handle_activate_client_request(self, message=None):
         LOG.info("Balena Wifi Plugin Activated")
+
         self.client_active = True
         self.display_network_setup()
         
