@@ -308,7 +308,7 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         utterance = random.choice(utterances)
         if data:
             for d in data:
-                utterance.replace('{{' + d + '}}', data[d])
+                utterance = utterance.replace('{{' + d + '}}', data[d])
         meta = {'dialog': key,
                 'skill': self.name}
         data = {'utterance': utterance,
