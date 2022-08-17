@@ -12,6 +12,8 @@ from ovos_utils.log import LOG
 class BalenaWifiSetupPlugin(PHALPlugin):
     def __init__(self, bus=None, config=None):
         super().__init__(bus=bus, name="ovos-PHAL-plugin-balena-wifi", config=config)
+        LOG.info(f"self.config={self.config}")
+
         self.gui = GUIInterface(bus=self.bus, skill_id=self.name)
         self.client_active = False
         self.client_id = None
@@ -23,6 +25,7 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         self.ssid = self.config.get("ssid") or "OVOS"
         self.pswd = self.config.get("psk") or None
         self.portal = self.config.get("portal") or "start dot openvoiceos dot com"
+        self.device_name = self.config.get("device") or "OVOS Device"
         self.wifi_command = "sudo /usr/local/sbin/wifi-connect --portal-ssid {ssid}"
         if self.pswd:
             self.wifi_command += " --portal-passphrase {pswd}"
@@ -235,7 +238,7 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         elif state == "select-network" and page_type == "prompt":
             self.gui["image"] = "3_phone_choose-wifi.png"
             self.gui["label"] = "Select local Wi-Fi network to connect"
-            self.gui["highlight"] = "OVOS Device"
+            self.gui["highlight"] = self.device_name
             self.gui["color"] = self.color
             self.gui["page_type"] = "Prompt"
             self.gui.show_page(page, override_animations=True, override_idle=True)
