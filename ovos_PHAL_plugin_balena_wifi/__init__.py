@@ -26,6 +26,10 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         self.pswd = self.config.get("psk") or None
         self.portal = self.config.get("portal") or "start dot openvoiceos dot com"
         self.device_name = self.config.get("device") or "OVOS Device"
+        self.image_connect_to_ap = self.config.get("image_connect_ap") or \
+            "1_phone_connect-to-ap.png"
+        self.image_choose_wifi = self.config.get("image_choose_wifi") or \
+            "3_phone_choose-wifi.png"
         self.wifi_command = "sudo /usr/local/sbin/wifi-connect --portal-ssid {ssid}"
         if self.pswd:
             self.wifi_command += " --portal-passphrase {pswd}"
@@ -230,14 +234,14 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         self.gui.clear()
         page = join(dirname(__file__), "ui", "NetworkLoader.qml")
         if state == "join-ap" and page_type == "prompt":
-            self.gui["image"] = "1_phone_connect-to-ap.png"
+            self.gui["image"] = self.image_connect_to_ap
             self.gui["label"] = "Connect to the Wi-Fi network"
             self.gui["highlight"] = self.ssid
             self.gui["color"] = self.color
             self.gui["page_type"] = "Prompt"
             self.gui.show_page(page, override_animations=True, override_idle=True)
         elif state == "select-network" and page_type == "prompt":
-            self.gui["image"] = "3_phone_choose-wifi.png"
+            self.gui["image"] = self.image_choose_wifi
             self.gui["label"] = "Select local Wi-Fi network to connect"
             self.gui["highlight"] = self.device_name
             self.gui["color"] = self.color
