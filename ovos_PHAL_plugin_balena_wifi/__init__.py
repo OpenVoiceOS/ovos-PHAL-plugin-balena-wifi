@@ -102,9 +102,7 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         if self.in_setup:
             # Always start with a clean slate
             self.cleanup_wifi_process()
-        
-        self.in_setup = True
-        
+
         self.wifi_process = pexpect.spawn(
             self.wifi_command.format(ssid=self.ssid)
         )
@@ -115,6 +113,7 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         restart = False
         if self.debug:
             self.speak_dialog("debug_start_setup")
+        self.in_setup = True
 
         while self.in_setup:
             try:
@@ -159,10 +158,8 @@ class BalenaWifiSetupPlugin(PHALPlugin):
                     self.report_setup_complete()
                     if self.debug:
                         self.speak_dialog("debug_wifi_connected")
-                elif "Error" in out or "[Errno" in out:
+                elif any((x in out for x in ("Error", "[Errno", "ERROR"))):
                     LOG.error(out)
-                    if self.debug:
-                        self.speak("Error Started")
                     with self._error_lock:
                         if self.in_setup:
                             self.report_setup_failed()
