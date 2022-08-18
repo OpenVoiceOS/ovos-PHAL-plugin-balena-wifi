@@ -225,6 +225,7 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         sleep(5)
         self.bus.emit(Message("ovos.wifi.setup.completed"))
         self.client_active = False
+        self.in_setup = False
         self.request_deactivate()
 
     def report_setup_failed(self, message=None):
