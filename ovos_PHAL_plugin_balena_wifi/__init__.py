@@ -159,21 +159,21 @@ class BalenaWifiSetupPlugin(PHALPlugin):
                     if self.debug:
                         self.speak_dialog("debug_wifi_connected")
                 elif any((x in out for x in
-                          ("Error", "[Errno", "ERROR",
+                          ("Error", "[Errno",
                            "Connection to access point not activated"))):
                     LOG.error(out)
-                    with self._error_lock:
-                        if self.in_setup:
-                            self.report_setup_failed()
-
                     # TODO figure out at least the errors handled gracefully
                     accepted_errors = [
-                        "Password length should be at least 8 characters"
+                        "Password length should be at least 8 characters",
+                        "Get org.freedesktop.NetworkManager.AccessPoint::RsnFlags property failed"
                     ]
                     for e in accepted_errors:
                         if e in out:
                             continue
                     else:
+                        with self._error_lock:
+                            if self.in_setup:
+                                self.report_setup_failed()
                         restart = True
                         break
 
