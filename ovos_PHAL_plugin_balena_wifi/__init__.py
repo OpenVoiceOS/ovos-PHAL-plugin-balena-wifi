@@ -161,6 +161,8 @@ class BalenaWifiSetupPlugin(PHALPlugin):
                         self.speak_dialog("debug_wifi_connected")
                 elif "Error" in out or "[Errno" in out:
                     LOG.error(out)
+                    if self.debug:
+                        self.speak("Error Started")
                     with self._error_lock:
                         if self.in_setup:
                             self.report_setup_failed()
@@ -177,7 +179,7 @@ class BalenaWifiSetupPlugin(PHALPlugin):
                         break
 
                 if self.debug:
-                    LOG.debug(out)
+                    LOG.info(out)
             except pexpect.exceptions.EOF:
                 # exited
                 LOG.info("Exited wifi setup process")
