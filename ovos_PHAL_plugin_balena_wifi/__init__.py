@@ -7,6 +7,7 @@ from mycroft_bus_client.message import Message, dig_for_message
 from ovos_plugin_manager.phal import PHALPlugin
 from ovos_utils.gui import GUIInterface
 from ovos_utils.log import LOG
+from threading import RLock
 
 
 class BalenaWifiSetupPlugin(PHALPlugin):
@@ -14,6 +15,7 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         super().__init__(bus=bus, name="ovos-PHAL-plugin-balena-wifi", config=config)
         LOG.info(f"self.config={self.config}")
 
+        self._error_lock = RLock()
         self.gui = GUIInterface(bus=self.bus, skill_id=self.name)
         self.client_active = False
         self.client_id = None
@@ -159,7 +161,9 @@ class BalenaWifiSetupPlugin(PHALPlugin):
                         self.speak_dialog("debug_wifi_connected")
                 elif "Error" in out or "[Errno" in out:
                     LOG.error(out)
-                    self.report_setup_failed()
+                    with self._error_lock:
+                        if self.in_setup:
+                            self.report_setup_failed()
 
                     # TODO figure out at least the errors handled gracefully
                     accepted_errors = [
