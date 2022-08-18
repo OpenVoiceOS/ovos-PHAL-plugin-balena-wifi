@@ -116,6 +116,7 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         self.in_setup = True
 
         while self.in_setup:
+            restart = False
             try:
                 out = self.wifi_process.readline().decode("utf-8").strip()
                 if out == prev:
