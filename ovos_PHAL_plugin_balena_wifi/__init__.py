@@ -200,7 +200,8 @@ class BalenaWifiSetupPlugin(PHALPlugin):
     def prompt_to_join_ap(self, message=None):
         """Provide instructions for setting up wifi."""
         self.manage_setup_display("join-ap", "prompt")
-        self.speak_dialog("wifi_intro_2", {"ssid": self.ssid})
+        self.speak_dialog("wifi_intro_2", {"ssid": self.ssid,
+                                           "portal": self.portal})
         # allow GUI to linger around for a bit, will block the wifi setup loop
         sleep(2)
 
