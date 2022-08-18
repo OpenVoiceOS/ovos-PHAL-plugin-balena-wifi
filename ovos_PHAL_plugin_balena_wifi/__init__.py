@@ -158,7 +158,9 @@ class BalenaWifiSetupPlugin(PHALPlugin):
                     self.report_setup_complete()
                     if self.debug:
                         self.speak_dialog("debug_wifi_connected")
-                elif any((x in out for x in ("Error", "[Errno", "ERROR"))):
+                elif any((x in out for x in
+                          ("Error", "[Errno", "ERROR",
+                           "Connection to access point not activated"))):
                     LOG.error(out)
                     with self._error_lock:
                         if self.in_setup:
