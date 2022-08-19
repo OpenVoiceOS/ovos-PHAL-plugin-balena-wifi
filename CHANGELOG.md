@@ -2,7 +2,15 @@
 
 ## [Unreleased](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/tree/HEAD)
 
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/compare/560b54241f8c29880d316e87205c9e6d69889a01...HEAD)
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/compare/V1.0.0a2...HEAD)
+
+**Merged pull requests:**
+
+- Make hard-coded params configurable [\#4](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/pull/4) ([NeonDaniel](https://github.com/NeonDaniel))
+
+## [V1.0.0a2](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/tree/V1.0.0a2) (2022-08-10)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/compare/560b54241f8c29880d316e87205c9e6d69889a01...V1.0.0a2)
 
 **Merged pull requests:**
 
