@@ -7,11 +7,15 @@ from mycroft_bus_client.message import Message, dig_for_message
 from ovos_plugin_manager.phal import PHALPlugin
 from ovos_utils.gui import GUIInterface
 from ovos_utils.log import LOG
+from threading import RLock
 
 
 class BalenaWifiSetupPlugin(PHALPlugin):
     def __init__(self, bus=None, config=None):
         super().__init__(bus=bus, name="ovos-PHAL-plugin-balena-wifi", config=config)
+        LOG.info(f"self.config={self.config}")
+
+        self._error_lock = RLock()
         self.gui = GUIInterface(bus=self.bus, skill_id=self.name)
         self.client_active = False
         self.client_id = None
@@ -19,13 +23,19 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         self.in_setup = False
         
         self.wifi_process = None
-        self.debug = True  # dev setting, VERY VERBOSE DIALOGS
-        self.ssid = "OVOS"
-        self.pswd = None
+        self.debug = self.config.get("debug")  # dev setting, VERY VERBOSE DIALOGS
+        self.ssid = self.config.get("ssid") or "OVOS"
+        self.pswd = self.config.get("psk") or None
+        self.portal = self.config.get("portal") or "start dot openvoiceos dot com"
+        self.device_name = self.config.get("device") or "OVOS Device"
+        self.image_connect_to_ap = self.config.get("image_connect_ap") or \
+            "1_phone_connect-to-ap.png"
+        self.image_choose_wifi = self.config.get("image_choose_wifi") or \
+            "3_phone_choose-wifi.png"
         self.wifi_command = "sudo /usr/local/sbin/wifi-connect --portal-ssid {ssid}"
         if self.pswd:
             self.wifi_command += " --portal-passphrase {pswd}"
-        self.color = "#FF0000"
+        self.color = self.config.get("color") or "#FF0000"
         
         # WIFI Plugin Registeration and Activation Specific Events        
         self.bus.on("ovos.phal.wifi.plugin.stop.setup.event", self.handle_stop_setup)
@@ -72,6 +82,7 @@ class BalenaWifiSetupPlugin(PHALPlugin):
             
     def handle_activate_client_request(self, message=None):
         LOG.info("Balena Wifi Plugin Activated")
+
         self.client_active = True
         self.display_network_setup()
         
@@ -91,9 +102,7 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         if self.in_setup:
             # Always start with a clean slate
             self.cleanup_wifi_process()
-        
-        self.in_setup = True
-        
+
         self.wifi_process = pexpect.spawn(
             self.wifi_command.format(ssid=self.ssid)
         )
@@ -104,8 +113,10 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         restart = False
         if self.debug:
             self.speak_dialog("debug_start_setup")
+        self.in_setup = True
 
         while self.in_setup:
+            restart = False
             try:
                 out = self.wifi_process.readline().decode("utf-8").strip()
                 if out == prev:
@@ -148,23 +159,27 @@ class BalenaWifiSetupPlugin(PHALPlugin):
                     self.report_setup_complete()
                     if self.debug:
                         self.speak_dialog("debug_wifi_connected")
-                elif "Error" in out or "[Errno" in out:
+                elif any((x in out for x in
+                          ("Error", "[Errno",
+                           "Connection to access point not activated"))):
                     LOG.error(out)
-                    self.report_setup_failed()
-
                     # TODO figure out at least the errors handled gracefully
                     accepted_errors = [
-                        "Password length should be at least 8 characters"
+                        "Password length should be at least 8 characters",
+                        "Get org.freedesktop.NetworkManager.AccessPoint::RsnFlags property failed"
                     ]
                     for e in accepted_errors:
                         if e in out:
                             continue
                     else:
+                        with self._error_lock:
+                            if self.in_setup:
+                                self.report_setup_failed()
                         restart = True
                         break
 
                 if self.debug:
-                    LOG.debug(out)
+                    LOG.info(out)
             except pexpect.exceptions.EOF:
                 # exited
                 LOG.info("Exited wifi setup process")
@@ -191,14 +206,16 @@ class BalenaWifiSetupPlugin(PHALPlugin):
     def prompt_to_join_ap(self, message=None):
         """Provide instructions for setting up wifi."""
         self.manage_setup_display("join-ap", "prompt")
-        self.speak_dialog("wifi_intro_2")
+        self.speak_dialog("wifi_intro_2", {"ssid": self.ssid,
+                                           "portal": self.portal})
         # allow GUI to linger around for a bit, will block the wifi setup loop
         sleep(2)
 
     def prompt_to_select_network(self, message=None):
         """Prompt user to select network and login."""
         self.manage_setup_display("select-network", "prompt")
-        self.speak_dialog("wifi_intro_3")
+        self.speak_dialog("wifi_intro_3", {"portal": self.portal,
+                                           "device": self.device_name})
         # allow GUI to linger around for a bit, will block the wifi setup loop
         sleep(2)
 
@@ -209,6 +226,7 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         sleep(5)
         self.bus.emit(Message("ovos.wifi.setup.completed"))
         self.client_active = False
+        self.in_setup = False
         self.request_deactivate()
 
     def report_setup_failed(self, message=None):
@@ -224,16 +242,16 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         self.gui.clear()
         page = join(dirname(__file__), "ui", "NetworkLoader.qml")
         if state == "join-ap" and page_type == "prompt":
-            self.gui["image"] = "1_phone_connect-to-ap.png"
+            self.gui["image"] = self.image_connect_to_ap
             self.gui["label"] = "Connect to the Wi-Fi network"
             self.gui["highlight"] = self.ssid
             self.gui["color"] = self.color
             self.gui["page_type"] = "Prompt"
             self.gui.show_page(page, override_animations=True, override_idle=True)
         elif state == "select-network" and page_type == "prompt":
-            self.gui["image"] = "3_phone_choose-wifi.png"
+            self.gui["image"] = self.image_choose_wifi
             self.gui["label"] = "Select local Wi-Fi network to connect"
-            self.gui["highlight"] = "OVOS Device"
+            self.gui["highlight"] = self.device_name
             self.gui["color"] = self.color
             self.gui["page_type"] = "Prompt"
             self.gui.show_page(page, override_animations=True, override_idle=True)
@@ -292,17 +310,21 @@ class BalenaWifiSetupPlugin(PHALPlugin):
                self.config_core.get("lang") or \
                "en-us"
 
-    def speak_dialog(self, key):
+    def speak_dialog(self, key, data: dict = None):
         """ Speak a random sentence from a dialog file.
         Args:
             key (str): dialog file key (e.g. "hello" to speak from the file
                                         "locale/en-us/hello.dialog")
+            data (dict): dict of dialog entity substitutions
         """
         dialog_file = join(dirname(__file__), "locale", self.lang, key + ".dialog")
         with open(dialog_file) as f:
             utterances = [u for u in f.read().split("\n")
                           if u.strip() and not u.startswith("#")]
         utterance = random.choice(utterances)
+        if data:
+            for d in data:
+                utterance = utterance.replace('{{' + d + '}}', data[d])
         meta = {'dialog': key,
                 'skill': self.name}
         data = {'utterance': utterance,
