@@ -166,7 +166,8 @@ class BalenaWifiSetupPlugin(PHALPlugin):
                     # TODO figure out at least the errors handled gracefully
                     accepted_errors = [
                         "Password length should be at least 8 characters",
-                        "Get org.freedesktop.NetworkManager.AccessPoint::RsnFlags property failed"
+                        "Get org.freedesktop.NetworkManager.AccessPoint::RsnFlags property failed",
+                        "Getting access points failed"
                     ]
                     for e in accepted_errors:
                         if e in out:
