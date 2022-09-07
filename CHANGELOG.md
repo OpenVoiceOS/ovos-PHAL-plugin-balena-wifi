@@ -2,7 +2,15 @@
 
 ## [Unreleased](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/tree/HEAD)
 
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/compare/V1.0.0a2...HEAD)
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/compare/V1.0.0a3...HEAD)
+
+**Merged pull requests:**
+
+- Prevent Infinite Error Loops [\#5](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/pull/5) ([NeonDaniel](https://github.com/NeonDaniel))
+
+## [V1.0.0a3](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/tree/V1.0.0a3) (2022-08-19)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/compare/V1.0.0a2...V1.0.0a3)
 
 **Merged pull requests:**
 
