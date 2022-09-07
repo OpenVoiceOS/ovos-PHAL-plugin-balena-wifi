@@ -207,15 +207,16 @@ class BalenaWifiSetupPlugin(PHALPlugin):
             except Exception as e:
                 LOG.exception(e)
                 break
-        self.handle_stop_setup()
-        
+
         if restart:
             # handle bugs in balena, sometimes it fails to come back up
             # seems to happen on
             # Error: Getting access points failed
             self.display_network_setup()
-        elif self.debug:
-            self.speak_dialog("debug_end_setup")
+        else:
+            if self.debug:
+                self.speak_dialog("debug_end_setup")
+            self.handle_stop_setup()
 
     # GUI events
     def prompt_to_join_ap(self, message=None):
