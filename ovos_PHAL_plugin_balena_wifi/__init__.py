@@ -115,6 +115,7 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         LOG.info("Balena Wifi In Network Setup")
         # Always start with a clean slate
         self.cleanup_wifi_process()
+        LOG.info(f"Spawning new wifi_process")
         self.wifi_process = pexpect.spawn(
             self.wifi_command.format(ssid=self.ssid)
         )
@@ -128,6 +129,7 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         in_setup = True
 
         while in_setup and self.client_active:
+            LOG.info("In loop")
             restart = False
             try:
                 out = self.wifi_process.readline().decode("utf-8").strip()
