@@ -300,7 +300,7 @@ class BalenaWifiSetupPlugin(PHALPlugin):
                         LOG.warning('trying to terminate wifi setup process')
                         self.wifi_process.terminate()
                         sleep(1)
-                        if self.wifi_process.isalive():
+                        if self.wifi_process and self.wifi_process.isalive():
                             raise Exception("self.wifi_process not terminated!")
                     self.wifi_process = None
                 else:
