@@ -7,7 +7,6 @@ from mycroft_bus_client.message import Message, dig_for_message
 from ovos_plugin_manager.phal import PHALPlugin
 from ovos_utils.gui import GUIInterface
 from ovos_utils.log import LOG
-from threading import RLock
 
 
 class BalenaWifiSetupPlugin(PHALPlugin):
@@ -15,12 +14,11 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         super().__init__(bus=bus, name="ovos-PHAL-plugin-balena-wifi", config=config)
         LOG.info(f"self.config={self.config}")
 
-        self._error_lock = RLock()
+        self._max_errors = 5
         self.gui = GUIInterface(bus=self.bus, skill_id=self.name)
         self.client_active = False
         self.client_id = None
-        self.registered = False        
-        self.in_setup = False
+        self.registered = False
         
         self.wifi_process = None
         self.debug = self.config.get("debug")  # dev setting, VERY VERBOSE DIALOGS
@@ -81,12 +79,30 @@ class BalenaWifiSetupPlugin(PHALPlugin):
             self.register_client()
             
     def handle_activate_client_request(self, message=None):
+        """
+        Handles an ovos.phal.wifi.plugin.activate.{self.client_id} request.
+        This sets the internal `client_active` flag to True and
+        calls `display_network_setup`.
+        """
         LOG.info("Balena Wifi Plugin Activated")
-
+        error_count = 0
         self.client_active = True
-        self.display_network_setup()
+        while error_count < self._max_errors and \
+                not self.display_network_setup():
+            LOG.info("Setup failed, retrying")
+            error_count += 1
+        if error_count >= self._max_errors:
+            self.handle_stop_setup()
+        if self.debug:
+            self.speak_dialog("debug_end_setup")
+        self.handle_stop_setup()
         
     def handle_deactivate_client_request(self, message=None):
+        """
+        Handles an ovos.phal.wifi.plugin.activate.{self.client_id} request.
+        This sets the internal `client_active` flag to False and
+        calls `cleanup_wifi_process`.
+        """
         LOG.info("Balena Wifi Plugin Deactivated")
         self.cleanup_wifi_process()
         self.client_active = False
@@ -98,11 +114,15 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         LOG.info("Balena Wifi Plugin Deactivation Requested")
         
     def display_network_setup(self):
+        """
+        Start a Balena Wifi process and monitor the output.
+        If an error occurs, this method is called recursively to clean up the
+        failed instance and start a new one.
+        """
         LOG.info("Balena Wifi In Network Setup")
-        if self.in_setup:
-            # Always start with a clean slate
-            self.cleanup_wifi_process()
-
+        # Always start with a clean slate
+        self.cleanup_wifi_process()
+        LOG.info(f"Spawning new wifi_process")
         self.wifi_process = pexpect.spawn(
             self.wifi_command.format(ssid=self.ssid)
         )
@@ -113,9 +133,9 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         restart = False
         if self.debug:
             self.speak_dialog("debug_start_setup")
-        self.in_setup = True
+        in_setup = True
 
-        while self.in_setup:
+        while in_setup and self.client_active:
             restart = False
             try:
                 out = self.wifi_process.readline().decode("utf-8").strip()
@@ -156,6 +176,7 @@ class BalenaWifiSetupPlugin(PHALPlugin):
                         self.speak_dialog("debug_connecting")
                 elif out.startswith("Internet connectivity established"):
                     LOG.info(out)
+                    in_setup = False
                     self.report_setup_complete()
                     if self.debug:
                         self.speak_dialog("debug_wifi_connected")
@@ -172,9 +193,7 @@ class BalenaWifiSetupPlugin(PHALPlugin):
                         if e in out:
                             continue
                     else:
-                        with self._error_lock:
-                            if self.in_setup:
-                                self.report_setup_failed()
+                        self.report_setup_failed()
                         restart = True
                         break
 
@@ -192,15 +211,8 @@ class BalenaWifiSetupPlugin(PHALPlugin):
             except Exception as e:
                 LOG.exception(e)
                 break
-        self.handle_stop_setup()
-        
-        if restart:
-            # handle bugs in balena, sometimes it fails to come back up
-            # seems to happen on
-            # Error: Getting access points failed
-            self.display_network_setup()
-        elif self.debug:
-            self.speak_dialog("debug_end_setup")
+
+        return not restart  # Return True on success
 
     # GUI events
     def prompt_to_join_ap(self, message=None):
@@ -226,17 +238,16 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         sleep(5)
         self.bus.emit(Message("ovos.wifi.setup.completed"))
         self.client_active = False
-        self.in_setup = False
         self.request_deactivate()
 
     def report_setup_failed(self, message=None):
         """Wifi setup failed"""
+        # self.in_setup = False
         self.manage_setup_display("setup-failed", "status")
         self.speak_dialog("debug_wifi_error")
         # allow GUI to linger around for a bit, will block the wifi setup loop
-        sleep(2)
-        self.in_setup = False
-        self.display_network_setup() 
+        sleep(5)
+        # self.display_network_setup()  The setup loop will do this
 
     def manage_setup_display(self, state, page_type):
         self.gui.clear()
@@ -272,7 +283,6 @@ class BalenaWifiSetupPlugin(PHALPlugin):
 
     # cleanup
     def cleanup_wifi_process(self):
-        self.in_setup = False
         if self.wifi_process is not None:
             try:
                 if self.wifi_process.isalive():
@@ -289,8 +299,12 @@ class BalenaWifiSetupPlugin(PHALPlugin):
                         LOG.warning('trying to terminate wifi setup process')
                         self.wifi_process.terminate()
                         sleep(1)
+                        if self.wifi_process and self.wifi_process.isalive():
+                            raise Exception("self.wifi_process not terminated!")
+                    self.wifi_process = None
                 else:
                     LOG.debug('wifi setup exited gracefully.')
+                    self.wifi_process = None
             except Exception as e:
                 LOG.exception(e)
         else:
