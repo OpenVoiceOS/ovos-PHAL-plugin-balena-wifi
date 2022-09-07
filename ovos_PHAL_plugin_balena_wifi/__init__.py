@@ -7,7 +7,6 @@ from mycroft_bus_client.message import Message, dig_for_message
 from ovos_plugin_manager.phal import PHALPlugin
 from ovos_utils.gui import GUIInterface
 from ovos_utils.log import LOG
-from threading import RLock
 
 
 class BalenaWifiSetupPlugin(PHALPlugin):
@@ -15,7 +14,7 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         super().__init__(bus=bus, name="ovos-PHAL-plugin-balena-wifi", config=config)
         LOG.info(f"self.config={self.config}")
 
-        self._error_lock = RLock()
+        self._max_errors = 5
         self.gui = GUIInterface(bus=self.bus, skill_id=self.name)
         self.client_active = False
         self.client_id = None
@@ -86,9 +85,17 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         calls `display_network_setup`.
         """
         LOG.info("Balena Wifi Plugin Activated")
-
+        error_count = 0
         self.client_active = True
-        self.display_network_setup()
+        while not self.display_network_setup() and \
+                error_count < self._max_errors:
+            LOG.info("Setup failed, retrying")
+            error_count += 1
+        if error_count >= self._max_errors:
+            self.handle_stop_setup()
+        if self.debug:
+            self.speak_dialog("debug_end_setup")
+        self.handle_stop_setup()
         
     def handle_deactivate_client_request(self, message=None):
         """
@@ -187,9 +194,7 @@ class BalenaWifiSetupPlugin(PHALPlugin):
                         if e in out:
                             continue
                     else:
-                        with self._error_lock:
-                            if in_setup:
-                                self.report_setup_failed()
+                        self.report_setup_failed()
                         restart = True
                         break
 
@@ -208,15 +213,7 @@ class BalenaWifiSetupPlugin(PHALPlugin):
                 LOG.exception(e)
                 break
 
-        if restart:
-            # handle bugs in balena, sometimes it fails to come back up
-            # seems to happen on
-            # Error: Getting access points failed
-            self.display_network_setup()
-        else:
-            if self.debug:
-                self.speak_dialog("debug_end_setup")
-            self.handle_stop_setup()
+        return not restart  # Return True on success
 
     # GUI events
     def prompt_to_join_ap(self, message=None):
@@ -250,7 +247,7 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         self.manage_setup_display("setup-failed", "status")
         self.speak_dialog("debug_wifi_error")
         # allow GUI to linger around for a bit, will block the wifi setup loop
-        sleep(2)
+        sleep(5)
         # self.display_network_setup()  The setup loop will do this
 
     def manage_setup_display(self, state, page_type):
