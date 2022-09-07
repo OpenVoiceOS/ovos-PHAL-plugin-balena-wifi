@@ -87,8 +87,8 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         LOG.info("Balena Wifi Plugin Activated")
         error_count = 0
         self.client_active = True
-        while not self.display_network_setup() and \
-                error_count < self._max_errors:
+        while error_count < self._max_errors and \
+                not self.display_network_setup():
             LOG.info("Setup failed, retrying")
             error_count += 1
         if error_count >= self._max_errors:
