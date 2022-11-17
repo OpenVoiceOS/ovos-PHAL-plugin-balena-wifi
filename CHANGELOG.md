@@ -2,11 +2,15 @@
 
 ## [Unreleased](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/tree/HEAD)
 
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/compare/V1.0.0a4...HEAD)
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/compare/V1.0.0a5...HEAD)
 
 **Closed issues:**
 
 - missing readme [\#7](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/issues/7)
+
+## [V1.0.0a5](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/tree/V1.0.0a5) (2022-10-02)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/compare/V1.0.0a4...V1.0.0a5)
 
 **Merged pull requests:**
 
