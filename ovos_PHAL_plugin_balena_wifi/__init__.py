@@ -5,7 +5,8 @@ from time import sleep
 import pexpect
 from mycroft_bus_client.message import Message, dig_for_message
 from ovos_plugin_manager.phal import PHALPlugin
-from ovos_utils.gui import GUIInterface
+from ovos_utils.gui import (GUIInterface,
+                            is_gui_running, is_gui_connected)
 from ovos_utils.log import LOG
 
 
@@ -194,7 +195,11 @@ class BalenaWifiSetupPlugin(PHALPlugin):
                             continue
                     else:
                         self.report_setup_failed()
-                        restart = True
+                        if (is_gui_running() or is_gui_connected(self.bus)) and can_use_touch_mouse():
+                            self.handle_stop_setup()
+                            self.bus.emit(Message("ovos.phal.wifi.plugin.user.activated"))
+                        else:
+                            restart = True
                         break
 
                 if self.debug:
