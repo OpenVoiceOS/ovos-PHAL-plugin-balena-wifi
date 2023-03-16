@@ -2,7 +2,16 @@
 
 ## [Unreleased](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/tree/HEAD)
 
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/compare/V1.0.0a5...HEAD)
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/compare/V1.0.0...HEAD)
+
+**Fixed bugs:**
+
+- Balena gets stuck in continuous "failed to connect to wifi, verify credentials and try again"  [\#9](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/issues/9)
+- fix for fail loop [\#10](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/pull/10) ([AIIX](https://github.com/AIIX))
+
+## [V1.0.0](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/tree/V1.0.0) (2022-10-02)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/compare/V1.0.0a5...V1.0.0)
 
 **Closed issues:**
 
