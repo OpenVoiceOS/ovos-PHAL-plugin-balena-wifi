@@ -1,5 +1,6 @@
 import random
-from os.path import dirname, join
+from distutils.spawn import find_executable
+from os.path import dirname, join, isfile
 from time import sleep
 
 import pexpect
@@ -10,7 +11,16 @@ from ovos_utils.gui import (GUIInterface,
 from ovos_utils.log import LOG
 
 
+class BalenaWifiValidator:
+    @staticmethod
+    def validate(config=None):
+        # check if balena is installed
+        return find_executable("wifi-connect") or isfile("/usr/local/sbin/wifi-connect")
+
+
 class BalenaWifiSetupPlugin(PHALPlugin):
+    validator = BalenaWifiValidator
+
     def __init__(self, bus=None, config=None):
         super().__init__(bus=bus, name="ovos-PHAL-plugin-balena-wifi", config=config)
         LOG.info(f"self.config={self.config}")
@@ -31,7 +41,8 @@ class BalenaWifiSetupPlugin(PHALPlugin):
             "1_phone_connect-to-ap.png"
         self.image_choose_wifi = self.config.get("image_choose_wifi") or \
             "3_phone_choose-wifi.png"
-        self.wifi_command = "sudo /usr/local/sbin/wifi-connect --portal-ssid {ssid}"
+        executable = find_executable("wifi-connect") or "/usr/local/sbin/wifi-connect"
+        self.wifi_command = f"sudo {executable} " + "--portal-ssid {ssid}"
         if self.pswd:
             self.wifi_command += " --portal-passphrase {pswd}"
         self.color = self.config.get("color") or "#FF0000"
