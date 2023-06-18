@@ -4,7 +4,7 @@ from os.path import dirname, join, isfile
 from time import sleep
 
 import pexpect
-from mycroft_bus_client.message import Message, dig_for_message
+from ovos_bus_client.message import Message, dig_for_message
 from ovos_plugin_manager.phal import PHALPlugin
 from ovos_utils.gui import (GUIInterface,
                             is_gui_running, is_gui_connected)
