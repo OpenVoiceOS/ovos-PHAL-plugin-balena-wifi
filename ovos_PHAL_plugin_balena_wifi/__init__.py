@@ -4,7 +4,7 @@ from os.path import dirname, join, isfile
 from time import sleep
 
 import pexpect
-from mycroft_bus_client.message import Message, dig_for_message
+from ovos_bus_client.message import Message, dig_for_message
 from ovos_plugin_manager.phal import PHALPlugin
 from ovos_utils.gui import (GUIInterface,
                             is_gui_running, is_gui_connected)
@@ -23,7 +23,7 @@ class BalenaWifiSetupPlugin(PHALPlugin):
 
     def __init__(self, bus=None, config=None):
         super().__init__(bus=bus, name="ovos-PHAL-plugin-balena-wifi", config=config)
-        LOG.info(f"self.config={self.config}")
+        LOG.debug(f"self.config={self.config}")
 
         self._max_errors = 5
         self.gui = GUIInterface(bus=self.bus, skill_id=self.name)
@@ -75,7 +75,7 @@ class BalenaWifiSetupPlugin(PHALPlugin):
             self.registered = True        
             self.bus.on(f"ovos.phal.wifi.plugin.activate.{self.client_id}", self.handle_activate_client_request)
             self.bus.on(f"ovos.phal.wifi.plugin.deactivate.{self.client_id}", self.handle_deactivate_client_request)
-            LOG.info(f"Client Registered with WIFI Plugin: {self.client_id}")
+            LOG.debug(f"Client Registered with WIFI Plugin: {self.client_id}")
     
     def handle_deregistered(self, message=None):
         self.registered = False
@@ -86,7 +86,7 @@ class BalenaWifiSetupPlugin(PHALPlugin):
     def handle_registration_failure(self, message=None):
         if not self.registered:
             error = message.data.get("error", "")
-            LOG.info(f"Registration Failure: {error}")
+            LOG.error(f"Registration Failure: {error}")
             # Try to Register the Client with WIFI Plugin Again
             self.register_client()
             
@@ -96,12 +96,12 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         This sets the internal `client_active` flag to True and
         calls `display_network_setup`.
         """
-        LOG.info("Balena Wifi Plugin Activated")
+        LOG.debug("Balena Wifi Plugin Activated")
         error_count = 0
         self.client_active = True
         while error_count < self._max_errors and \
                 not self.display_network_setup():
-            LOG.info("Setup failed, retrying")
+            LOG.error("Setup failed, retrying")
             error_count += 1
         if error_count >= self._max_errors:
             self.handle_stop_setup()
@@ -115,7 +115,7 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         This sets the internal `client_active` flag to False and
         calls `cleanup_wifi_process`.
         """
-        LOG.info("Balena Wifi Plugin Deactivated")
+        LOG.debug("Balena Wifi Plugin Deactivated")
         self.cleanup_wifi_process()
         self.client_active = False
         self.gui.release()
@@ -123,7 +123,7 @@ class BalenaWifiSetupPlugin(PHALPlugin):
     def request_deactivate(self, message=None):
         self.bus.emit(Message("ovos.phal.wifi.plugin.remove.active.client", {
                       "client": "ovos-PHAL-plugin-balena-wifi"}))
-        LOG.info("Balena Wifi Plugin Deactivation Requested")
+        LOG.debug("Balena Wifi Plugin Deactivation Requested")
         
     def display_network_setup(self):
         """
@@ -131,10 +131,10 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         If an error occurs, this method is called recursively to clean up the
         failed instance and start a new one.
         """
-        LOG.info("Balena Wifi In Network Setup")
+        LOG.debug("Balena Wifi In Network Setup")
         # Always start with a clean slate
         self.cleanup_wifi_process()
-        LOG.info(f"Spawning new wifi_process")
+        LOG.debug(f"Spawning new wifi_process")
         self.wifi_process = pexpect.spawn(
             self.wifi_command.format(ssid=self.ssid)
         )
