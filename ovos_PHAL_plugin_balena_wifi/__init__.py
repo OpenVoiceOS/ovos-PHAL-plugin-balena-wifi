@@ -6,8 +6,8 @@ from time import sleep
 import pexpect
 from ovos_bus_client.message import Message, dig_for_message
 from ovos_plugin_manager.phal import PHALPlugin
-from ovos_utils.gui import (GUIInterface,
-                            is_gui_running, is_gui_connected)
+from ovos_bus_client.apis.gui import GUIInterface
+from ovos_utils.gui import is_gui_running, is_gui_connected
 from ovos_utils.log import LOG
 
 
