@@ -5,9 +5,9 @@ from time import sleep
 
 import pexpect
 from ovos_bus_client.message import Message, dig_for_message
+from ovos_bus_client.apis.gui import GUIInterface
 from ovos_plugin_manager.phal import PHALPlugin
-from ovos_utils.gui import (GUIInterface,
-                            is_gui_running, is_gui_connected)
+from ovos_utils.gui import is_gui_running, is_gui_connected
 from ovos_utils.log import LOG
 
 
@@ -30,7 +30,7 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         self.client_active = False
         self.client_id = None
         self.registered = False
-        
+
         self.wifi_process = None
         self.debug = self.config.get("debug")  # dev setting, VERY VERBOSE DIALOGS
         self.ssid = self.config.get("ssid") or "OVOS"
@@ -46,17 +46,17 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         if self.pswd:
             self.wifi_command += " --portal-passphrase {pswd}"
         self.color = self.config.get("color") or "#FF0000"
-        
-        # WIFI Plugin Registeration and Activation Specific Events        
+
+        # WIFI Plugin Registeration and Activation Specific Events
         self.bus.on("ovos.phal.wifi.plugin.stop.setup.event", self.handle_stop_setup)
         self.bus.on("ovos.phal.wifi.plugin.client.registered", self.handle_registered)
         self.bus.on("ovos.phal.wifi.plugin.client.deregistered", self.handle_deregistered)
         self.bus.on("ovos.phal.wifi.plugin.client.registration.failure", self.handle_registration_failure)
         self.bus.on("ovos.phal.wifi.plugin.alive", self.register_client)
-        
+
         # Try Register the Client with WIFI Plugin on Startup
         self.register_client()
-        
+
     # Wifi Plugin Registeration Handling
     def register_client(self, message=None):
         self.bus.emit(Message("ovos.phal.wifi.plugin.register.client", {
@@ -66,30 +66,30 @@ class BalenaWifiSetupPlugin(PHALPlugin):
             "has_gui": True,
             "requires_input": False
         }))
-        
+
     def handle_registered(self, message=None):
         get_client = message.data.get("client", "")
         if get_client == self.name:
             get_id = message.data.get("id", "")
             self.client_id = get_id
-            self.registered = True        
+            self.registered = True
             self.bus.on(f"ovos.phal.wifi.plugin.activate.{self.client_id}", self.handle_activate_client_request)
             self.bus.on(f"ovos.phal.wifi.plugin.deactivate.{self.client_id}", self.handle_deactivate_client_request)
             LOG.debug(f"Client Registered with WIFI Plugin: {self.client_id}")
-    
+
     def handle_deregistered(self, message=None):
         self.registered = False
         self.bus.remove(f"ovos.phal.wifi.plugin.activate.{self.client_id}", self.handle_active_client_request)
         self.bus.remove(f"ovos.phal.wifi.plugin.deactivate.{self.client_id}", self.handle_deactivate_client_request)
         self.client_id = None
-        
+
     def handle_registration_failure(self, message=None):
         if not self.registered:
             error = message.data.get("error", "")
             LOG.error(f"Registration Failure: {error}")
             # Try to Register the Client with WIFI Plugin Again
             self.register_client()
-            
+
     def handle_activate_client_request(self, message=None):
         """
         Handles an ovos.phal.wifi.plugin.activate.{self.client_id} request.
@@ -108,7 +108,7 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         if self.debug:
             self.speak_dialog("debug_end_setup")
         self.handle_stop_setup()
-        
+
     def handle_deactivate_client_request(self, message=None):
         """
         Handles an ovos.phal.wifi.plugin.activate.{self.client_id} request.
@@ -119,12 +119,12 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         self.cleanup_wifi_process()
         self.client_active = False
         self.gui.release()
-        
+
     def request_deactivate(self, message=None):
         self.bus.emit(Message("ovos.phal.wifi.plugin.remove.active.client", {
                       "client": "ovos-PHAL-plugin-balena-wifi"}))
         LOG.debug("Balena Wifi Plugin Deactivation Requested")
-        
+
     def display_network_setup(self):
         """
         Start a Balena Wifi process and monitor the output.
@@ -325,10 +325,10 @@ class BalenaWifiSetupPlugin(PHALPlugin):
                 LOG.exception(e)
         else:
             return
-    
+
     def handle_stop_setup(self, message=None):
         self.request_deactivate()
-    
+
     def shutdown(self):
         self.handle_stop_setup()
         super().shutdown()
