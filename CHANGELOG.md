@@ -1,49 +1,12 @@
 # Changelog
 
-## [1.0.1a5](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/tree/1.0.1a5) (2024-09-17)
+## [1.1.0a1](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/tree/1.1.0a1) (2024-11-06)
 
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/compare/V1.0.1a4...1.0.1a5)
-
-**Merged pull requests:**
-
-- feat:semver [\#16](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/pull/16) ([JarbasAl](https://github.com/JarbasAl))
-
-## [V1.0.1a4](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/tree/V1.0.1a4) (2024-01-28)
-
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/compare/V1.0.1a3...V1.0.1a4)
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/compare/1.0.1...1.1.0a1)
 
 **Merged pull requests:**
 
-- modernize imports [\#14](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/pull/14) ([JarbasAl](https://github.com/JarbasAl))
-
-## [V1.0.1a3](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/tree/V1.0.1a3) (2023-07-03)
-
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/compare/V1.0.1a2...V1.0.1a3)
-
-**Merged pull requests:**
-
-- unmycroftify [\#13](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/pull/13) ([JarbasAl](https://github.com/JarbasAl))
-
-## [V1.0.1a2](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/tree/V1.0.1a2) (2023-04-04)
-
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/compare/V1.0.1a1...V1.0.1a2)
-
-**Fixed bugs:**
-
-- Balena gets stuck in continuous "failed to connect to wifi, verify credentials and try again"  [\#9](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/issues/9)
-- feat/add\_validator [\#12](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/pull/12) ([JarbasAl](https://github.com/JarbasAl))
-
-**Merged pull requests:**
-
-- Add .gitignore to prevent committing build files [\#11](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/pull/11) ([NeonDaniel](https://github.com/NeonDaniel))
-
-## [V1.0.1a1](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/tree/V1.0.1a1) (2023-03-16)
-
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/compare/V1.0.0...V1.0.1a1)
-
-**Fixed bugs:**
-
-- fix for fail loop [\#10](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/pull/10) ([AIIX](https://github.com/AIIX))
+-  fix: allow latest bus client version [\#18](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/pull/18) ([JarbasAl](https://github.com/JarbasAl))
 
 
 
