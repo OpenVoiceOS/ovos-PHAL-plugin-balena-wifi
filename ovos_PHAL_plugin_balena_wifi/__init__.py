@@ -1,14 +1,15 @@
-import random
 from distutils.spawn import find_executable
 from os.path import dirname, join, isfile
 from time import sleep
 
 import pexpect
-from ovos_bus_client.message import Message, dig_for_message
-from ovos_plugin_manager.phal import PHALPlugin
 from ovos_bus_client.apis.gui import GUIInterface
+from ovos_bus_client.message import Message
+from ovos_plugin_manager.phal import PHALPlugin
+from ovos_utils.device_input import can_use_touch_mouse
 from ovos_utils.gui import is_gui_running, is_gui_connected
 from ovos_utils.log import LOG
+from ovos_workshop.app import OVOSAbstractApplication
 
 
 class BalenaWifiValidator:
@@ -18,45 +19,47 @@ class BalenaWifiValidator:
         return find_executable("wifi-connect") or isfile("/usr/local/sbin/wifi-connect")
 
 
-class BalenaWifiSetupPlugin(PHALPlugin):
+class BalenaWifiSetupPlugin(PHALPlugin, OVOSAbstractApplication):
     validator = BalenaWifiValidator
 
     def __init__(self, bus=None, config=None):
-        super().__init__(bus=bus, name="ovos-PHAL-plugin-balena-wifi", config=config)
+        name = "ovos-PHAL-plugin-balena-wifi"
+        gui = GUIInterface(bus=bus, skill_id="ovos-PHAL-plugin-balena-wifi",
+                           ui_directories={"qt5": f"{dirname(__file__)}/gui/qt5",
+                                           "all": f"{dirname(__file__)}/gui/all"})
+        PHALPlugin.__init__(self, bus=bus, config=config, name=name)
+        OVOSAbstractApplication.__init__(self, bus=bus, skill_id=name, gui=gui, resources_dir=f"{dirname(__file__)}")
         LOG.debug(f"self.config={self.config}")
 
         self._max_errors = 5
-        self.gui = GUIInterface(bus=self.bus, skill_id=self.name)
         self.client_active = False
         self.client_id = None
         self.registered = False
-        
+
         self.wifi_process = None
         self.debug = self.config.get("debug")  # dev setting, VERY VERBOSE DIALOGS
         self.ssid = self.config.get("ssid") or "OVOS"
         self.pswd = self.config.get("psk") or None
         self.portal = self.config.get("portal") or "start dot openvoiceos dot com"
         self.device_name = self.config.get("device") or "OVOS Device"
-        self.image_connect_to_ap = self.config.get("image_connect_ap") or \
-            "1_phone_connect-to-ap.png"
-        self.image_choose_wifi = self.config.get("image_choose_wifi") or \
-            "3_phone_choose-wifi.png"
+        self.image_connect_to_ap = self.config.get("image_connect_ap") or "1_phone_connect-to-ap.png"
+        self.image_choose_wifi = self.config.get("image_choose_wifi") or "3_phone_choose-wifi.png"
         executable = find_executable("wifi-connect") or "/usr/local/sbin/wifi-connect"
         self.wifi_command = f"sudo {executable} " + "--portal-ssid {ssid}"
         if self.pswd:
             self.wifi_command += " --portal-passphrase {pswd}"
         self.color = self.config.get("color") or "#FF0000"
-        
+
         # WIFI Plugin Registeration and Activation Specific Events        
         self.bus.on("ovos.phal.wifi.plugin.stop.setup.event", self.handle_stop_setup)
         self.bus.on("ovos.phal.wifi.plugin.client.registered", self.handle_registered)
         self.bus.on("ovos.phal.wifi.plugin.client.deregistered", self.handle_deregistered)
         self.bus.on("ovos.phal.wifi.plugin.client.registration.failure", self.handle_registration_failure)
         self.bus.on("ovos.phal.wifi.plugin.alive", self.register_client)
-        
+
         # Try Register the Client with WIFI Plugin on Startup
         self.register_client()
-        
+
     # Wifi Plugin Registeration Handling
     def register_client(self, message=None):
         self.bus.emit(Message("ovos.phal.wifi.plugin.register.client", {
@@ -66,30 +69,30 @@ class BalenaWifiSetupPlugin(PHALPlugin):
             "has_gui": True,
             "requires_input": False
         }))
-        
+
     def handle_registered(self, message=None):
         get_client = message.data.get("client", "")
         if get_client == self.name:
             get_id = message.data.get("id", "")
             self.client_id = get_id
-            self.registered = True        
+            self.registered = True
             self.bus.on(f"ovos.phal.wifi.plugin.activate.{self.client_id}", self.handle_activate_client_request)
             self.bus.on(f"ovos.phal.wifi.plugin.deactivate.{self.client_id}", self.handle_deactivate_client_request)
             LOG.debug(f"Client Registered with WIFI Plugin: {self.client_id}")
-    
+
     def handle_deregistered(self, message=None):
         self.registered = False
         self.bus.remove(f"ovos.phal.wifi.plugin.activate.{self.client_id}", self.handle_active_client_request)
         self.bus.remove(f"ovos.phal.wifi.plugin.deactivate.{self.client_id}", self.handle_deactivate_client_request)
         self.client_id = None
-        
+
     def handle_registration_failure(self, message=None):
         if not self.registered:
             error = message.data.get("error", "")
             LOG.error(f"Registration Failure: {error}")
             # Try to Register the Client with WIFI Plugin Again
             self.register_client()
-            
+
     def handle_activate_client_request(self, message=None):
         """
         Handles an ovos.phal.wifi.plugin.activate.{self.client_id} request.
@@ -108,7 +111,7 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         if self.debug:
             self.speak_dialog("debug_end_setup")
         self.handle_stop_setup()
-        
+
     def handle_deactivate_client_request(self, message=None):
         """
         Handles an ovos.phal.wifi.plugin.activate.{self.client_id} request.
@@ -119,12 +122,12 @@ class BalenaWifiSetupPlugin(PHALPlugin):
         self.cleanup_wifi_process()
         self.client_active = False
         self.gui.release()
-        
+
     def request_deactivate(self, message=None):
-        self.bus.emit(Message("ovos.phal.wifi.plugin.remove.active.client", {
-                      "client": "ovos-PHAL-plugin-balena-wifi"}))
+        self.bus.emit(Message("ovos.phal.wifi.plugin.remove.active.client",
+                              {"client": "ovos-PHAL-plugin-balena-wifi"}))
         LOG.debug("Balena Wifi Plugin Deactivation Requested")
-        
+
     def display_network_setup(self):
         """
         Start a Balena Wifi process and monitor the output.
@@ -325,43 +328,10 @@ class BalenaWifiSetupPlugin(PHALPlugin):
                 LOG.exception(e)
         else:
             return
-    
+
     def handle_stop_setup(self, message=None):
         self.request_deactivate()
-    
+
     def shutdown(self):
         self.handle_stop_setup()
         super().shutdown()
-
-    # speech
-    @property
-    def lang(self):
-        return self.config.get("lang") or \
-               self.config_core.get("lang") or \
-               "en-us"
-
-    def speak_dialog(self, key, data: dict = None):
-        """ Speak a random sentence from a dialog file.
-        Args:
-            key (str): dialog file key (e.g. "hello" to speak from the file
-                                        "locale/en-us/hello.dialog")
-            data (dict): dict of dialog entity substitutions
-        """
-        dialog_file = join(dirname(__file__), "locale", self.lang, key + ".dialog")
-        with open(dialog_file) as f:
-            utterances = [u for u in f.read().split("\n")
-                          if u.strip() and not u.startswith("#")]
-        utterance = random.choice(utterances)
-        if data:
-            for d in data:
-                utterance = utterance.replace('{{' + d + '}}', data[d])
-        meta = {'dialog': key,
-                'skill': self.name}
-        data = {'utterance': utterance,
-                'expect_response': False,
-                'meta': meta,
-                'lang': self.lang}
-        message = dig_for_message()
-        m = message.forward("speak", data) if message else Message("speak", data)
-        m.context["skill_id"] = self.name
-        self.bus.emit(m)

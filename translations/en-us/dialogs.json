@@ -1,0 +1,47 @@
+{
+    "debug_ap_stopped.dialog": [
+        "captive portal stopped"
+    ],
+    "debug_user_connected.dialog": [
+        "user connected to captive portal"
+    ],
+    "debug_connecting.dialog": [
+        "Connecting to selected wifi, see logs"
+    ],
+    "debug_start_setup.dialog": [
+        "wifi setup started"
+    ],
+    "debug_ap_stop.dialog": [
+        "stopping captive portal"
+    ],
+    "wifi_intro.dialog": [
+        "I need to be connected to the internet. You can either plug me in with a network cable, or use wifi. Follow these instructions to set up wifi."
+    ],
+    "debug_http_started.dialog": [
+        "started http server"
+    ],
+    "debug_ap_created.dialog": [
+        "access point created"
+    ],
+    "debug_wifi_connected.dialog": [
+        "Connected to wifi"
+    ],
+    "debug_wifi_scanned.dialog": [
+        "I have scanned for access points, see logs for results"
+    ],
+    "debug_end_setup.dialog": [
+        "wifi setup finished"
+    ],
+    "debug_ap_start.dialog": [
+        "starting captive portal"
+    ],
+    "wifi_intro_3.dialog": [
+        "Choose the Wifi network from the list you would like to connect your {device} to."
+    ],
+    "wifi_intro_2.dialog": [
+        "I have created a temporary WiFi network called {ssid}. Connect to it from your phone or computer and go to {portal}."
+    ],
+    "debug_wifi_error.dialog": [
+        "failed to connect to wifi, verify credentials and try again"
+    ]
+}
