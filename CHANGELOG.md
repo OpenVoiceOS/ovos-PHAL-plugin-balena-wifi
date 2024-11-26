@@ -1,12 +1,12 @@
 # Changelog
 
-## [1.1.0a1](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/tree/1.1.0a1) (2024-11-06)
+## [1.2.0a1](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/tree/1.2.0a1) (2024-11-26)
 
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/compare/1.0.1...1.1.0a1)
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/compare/1.1.0...1.2.0a1)
 
 **Merged pull requests:**
 
--  fix: allow latest bus client version [\#18](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/pull/18) ([JarbasAl](https://github.com/JarbasAl))
+- feat: modernize + gitlocalize [\#20](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/pull/20) ([JarbasAl](https://github.com/JarbasAl))
 
 
 
