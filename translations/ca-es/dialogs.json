@@ -6,13 +6,13 @@
         "l'usuari s'ha connectat al portal captiu"
     ],
     "debug_connecting.dialog": [
-        "S'est\u00e0 connectaant a la wifi selecionada, vegeu els registres"
+        "S'està connectaant a la wifi selecionada, vegeu els registres"
     ],
     "debug_start_setup.dialog": [
-        "s'ha iniciat la configuraci\u00f3 de la wifi"
+        "s'ha iniciat la configuració de la wifi"
     ],
     "debug_ap_stop.dialog": [
-        "s'est\u00e0 aturant el portal captiu"
+        "s'està aturant el portal captiu"
     ],
     "wifi_intro.dialog": [
         "Necessito connectar-me a internet. Podeu connectar-m'hi amb un cable de xarxa, o usar una xarxa wifi. Seguiu aquestes instruccions per a configurar una xarxa wifi"
@@ -21,19 +21,19 @@
         "s'ha iniciat el servidor http"
     ],
     "debug_ap_created.dialog": [
-        "s'ha creat un punt d'acc\u00e9s"
+        "s'ha creat un punt d'accés"
     ],
     "debug_wifi_connected.dialog": [
         "S'ha connectat a la wifi"
     ],
     "debug_wifi_scanned.dialog": [
-        "He cercat punts d'acc\u00e9s, vegeu els registres per als resultats"
+        "He cercat punts d'accés, vegeu els registres per als resultats"
     ],
     "debug_end_setup.dialog": [
-        "la configuraci\u00f3 de la wifi ha finalitzat"
+        "la configuració de la wifi ha finalitzat"
     ],
     "debug_ap_start.dialog": [
-        "s'est\u00e0 iniciant el portal captiu"
+        "s'està iniciant el portal captiu"
     ],
     "debug_wifi_error.dialog": [
         "no s'ha pogut connectar a la wifi, verifiqueu la credencials i torneu-ho a intentar"
