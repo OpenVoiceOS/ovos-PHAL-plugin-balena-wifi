@@ -1,0 +1,47 @@
+{
+  "debug_ap_stopped.dialog": [
+    "portal cativo parado"
+  ],
+  "debug_user_connected.dialog": [
+    "utilizador conectado ao portal cativo"
+  ],
+  "debug_connecting.dialog": [
+    "Conectando ao wifi selecionado, veja os logs"
+  ],
+  "debug_start_setup.dialog": [
+    "configuração de wifi iniciada"
+  ],
+  "debug_ap_stop.dialog": [
+    "parando portal cativo"
+  ],
+  "wifi_intro.dialog": [
+    "Preciso estar conectado à internet. Pode conectar-me com um cabo de rede ou usar o wifi. Siga estas instruções para configurar o wifi."
+  ],
+  "debug_http_started.dialog": [
+    "servidor http iniciado"
+  ],
+  "debug_ap_created.dialog": [
+    "ponto de acesso criado"
+  ],
+  "debug_wifi_connected.dialog": [
+    "Conectado ao wifi"
+  ],
+  "debug_wifi_scanned.dialog": [
+    "Eu escaneei os pontos de acesso, veja os logs para obter resultados"
+  ],
+  "debug_end_setup.dialog": [
+    "configuração de wifi concluída"
+  ],
+  "debug_ap_start.dialog": [
+    "iniciando portal cativo"
+  ],
+  "wifi_intro_3.dialog": [
+    "Escolha a rede Wi-Fi na lista à qual você gostaria de conectar seu {device}."
+  ],
+  "wifi_intro_2.dialog": [
+    "Criei uma rede WiFi temporária chamada {ssid}. Conecte-se a ela pelo seu telefone ou computador e vá para {portal}."
+  ],
+  "debug_wifi_error.dialog": [
+    "falha ao conectar ao wifi, verifique as credenciais e tente novamente"
+  ]
+}

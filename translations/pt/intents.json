@@ -1,0 +1,8 @@
+{
+  "launch_setup.intent": [
+    "iniciar conexão wifi",
+    "iniciar configuração wifi",
+    "mudar rede wifi",
+    "adicionar rede wifi"
+  ]
+}
