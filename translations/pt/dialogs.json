@@ -3,7 +3,7 @@
     "portal cativo parado"
   ],
   "debug_user_connected.dialog": [
-    null
+    "utilizador conectado ao portal cativo"
   ],
   "debug_connecting.dialog": [
     "Conectando ao wifi selecionado, veja os logs"
@@ -15,7 +15,7 @@
     "parando portal cativo"
   ],
   "wifi_intro.dialog": [
-    null
+    "Preciso estar conectado à internet. Pode conectar-me com um cabo de rede ou usar o wifi. Siga estas instruções para configurar o wifi."
   ],
   "debug_http_started.dialog": [
     "servidor http iniciado"
