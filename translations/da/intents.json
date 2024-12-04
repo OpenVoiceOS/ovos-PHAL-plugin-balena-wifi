@@ -1,0 +1,8 @@
+{
+  "launch_setup.intent": [
+    "start wifi-forbindelse",
+    "start wifi-opsætning",
+    "skift wifi-netværk",
+    "tilføj wifi-netværk"
+  ]
+}

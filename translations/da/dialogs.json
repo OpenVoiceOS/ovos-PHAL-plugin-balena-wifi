@@ -1,0 +1,47 @@
+{
+  "debug_ap_stopped.dialog": [
+    "captive portal stoppet"
+  ],
+  "debug_user_connected.dialog": [
+    "bruger forbundet til captive portal"
+  ],
+  "debug_connecting.dialog": [
+    "Opretter forbindelse til valgt wifi, se logs"
+  ],
+  "debug_start_setup.dialog": [
+    "wifi opsætning startet"
+  ],
+  "debug_ap_stop.dialog": [
+    "stopper captive portal"
+  ],
+  "wifi_intro.dialog": [
+    "Jeg skal have forbindelse til internettet. Du kan enten tilslutte mig med et netværkskabel eller bruge wifi. Følg disse instruktioner for at konfigurere wifi."
+  ],
+  "debug_http_started.dialog": [
+    "startede http-server"
+  ],
+  "debug_ap_created.dialog": [
+    "adgangspunkt oprettet"
+  ],
+  "debug_wifi_connected.dialog": [
+    "Tilsluttet wifi"
+  ],
+  "debug_wifi_scanned.dialog": [
+    "Jeg har scannet for adgangspunkter, se logfiler for resultater"
+  ],
+  "debug_end_setup.dialog": [
+    "wifi opsætning afsluttet"
+  ],
+  "debug_ap_start.dialog": [
+    "start captive portaæ"
+  ],
+  "wifi_intro_3.dialog": [
+    "Vælg det Wifi-netværk på listen, du gerne vil forbinde din {device} til."
+  ],
+  "wifi_intro_2.dialog": [
+    "Jeg har oprettet et midlertidigt WiFi-netværk kaldet {ssid}. Opret forbindelse til den fra din telefon eller computer, og gå til {portal}."
+  ],
+  "debug_wifi_error.dialog": [
+    "kunne ikke oprette forbindelse til wifi, bekræft legitimationsoplysninger og prøv igen"
+  ]
+}
