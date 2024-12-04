@@ -1,0 +1,47 @@
+{
+  "debug_ap_stopped.dialog": [
+    "Captive Portal gestoppt"
+  ],
+  "debug_user_connected.dialog": [
+    "Benutzer mit Captive Portal verbunden"
+  ],
+  "debug_connecting.dialog": [
+    "Verbindung zum ausgewählten WLAN wird hergestellt, siehe Protokolle"
+  ],
+  "debug_start_setup.dialog": [
+    "WLAN-Einrichtung gestartet"
+  ],
+  "debug_ap_stop.dialog": [
+    "Captive Portal wird gestoppt"
+  ],
+  "wifi_intro.dialog": [
+    "Ich muss mit dem Internet verbunden sein. Du kannst mich entweder mit einem Netzwerkkabel anschließen oder WLAN verwenden. Folge den Anweisungen, um WLAN einzurichten."
+  ],
+  "debug_http_started.dialog": [
+    "http-Server gestartet"
+  ],
+  "debug_ap_created.dialog": [
+    "Zugangspunkt erstellt"
+  ],
+  "debug_wifi_connected.dialog": [
+    "Mit WLAN verbunden"
+  ],
+  "debug_wifi_scanned.dialog": [
+    "Ich habe nach Zugangspunkten gesucht. Die Ergebnisse findest Du in den Protokollen."
+  ],
+  "debug_end_setup.dialog": [
+    "WLAN-Einrichtung abgeschlossen"
+  ],
+  "debug_ap_start.dialog": [
+    "Captive-Portal wird gestartet"
+  ],
+  "wifi_intro_3.dialog": [
+    "Wähle aus der Liste das WLAN-Netzwerk aus, mit dem Du Dein {device} verbinden möchten."
+  ],
+  "wifi_intro_2.dialog": [
+    "Ich habe ein temporäres WLAN-Netzwerk mit dem Namen {ssid} erstellt. Stelle von Deinem Telefon oder Computer aus eine Verbindung dazu her und gehe zu {portal}."
+  ],
+  "debug_wifi_error.dialog": [
+    "Verbindung zum WLAN konnte nicht hergestellt werden. Anmeldeinformationen überprüfen und erneut versuchen."
+  ]
+}
