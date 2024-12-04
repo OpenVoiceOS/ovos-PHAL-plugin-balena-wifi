@@ -1,11 +1,13 @@
 # Changelog
 
-## [1.2.1a1](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/tree/1.2.1a1) (2024-11-27)
+## [1.2.1a2](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/tree/1.2.1a2) (2024-12-04)
 
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/compare/1.2.1a1...1.2.1a1)
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/compare/1.2.1a1...1.2.1a2)
 
 **Merged pull requests:**
 
+- de-de/translate [\#26](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/pull/26) ([gitlocalize-app[bot]](https://github.com/apps/gitlocalize-app))
+- da-dk/translate [\#25](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/pull/25) ([gitlocalize-app[bot]](https://github.com/apps/gitlocalize-app))
 - Add Catalan strings [\#24](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/pull/24) ([gitlocalize-app[bot]](https://github.com/apps/gitlocalize-app))
 
 ## [1.2.1a1](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-balena-wifi/tree/1.2.1a1) (2024-11-27)
