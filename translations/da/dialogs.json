@@ -1,0 +1,47 @@
+{
+  "debug_ap_stopped.dialog": [
+    "captive portal stoppet"
+  ],
+  "debug_user_connected.dialog": [
+    null
+  ],
+  "debug_connecting.dialog": [
+    null
+  ],
+  "debug_start_setup.dialog": [
+    null
+  ],
+  "debug_ap_stop.dialog": [
+    "stopper captive portal"
+  ],
+  "wifi_intro.dialog": [
+    null
+  ],
+  "debug_http_started.dialog": [
+    null
+  ],
+  "debug_ap_created.dialog": [
+    null
+  ],
+  "debug_wifi_connected.dialog": [
+    null
+  ],
+  "debug_wifi_scanned.dialog": [
+    null
+  ],
+  "debug_end_setup.dialog": [
+    null
+  ],
+  "debug_ap_start.dialog": [
+    "start captive portaæ"
+  ],
+  "wifi_intro_3.dialog": [
+    null
+  ],
+  "wifi_intro_2.dialog": [
+    null
+  ],
+  "debug_wifi_error.dialog": [
+    null
+  ]
+}
